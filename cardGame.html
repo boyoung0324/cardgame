@@ -29,7 +29,7 @@
 
 
 
-            var cardArr = []; //모든 카드를 담을 배열
+            var cardArr = []; //모든 카드를 담을 배열 _ 0~52
             var firstCard = null; //첫번째로 클릭한 카드
 
             window.onload = function () { //윈도우가 실행될 때,
@@ -52,7 +52,39 @@
 
 
 
-            // <img>에 이벤트 등록(클릭 이벤트)
+                // cardArr초기화
+                function initCardArr() {
+
+                for (i = 0; i < 52; i++) {
+                    cardArr.push(i); //배열에 순서대로 들어감
+                }
+
+                }
+
+
+
+            // 52개의 <img>를 생성해서 문자열로 반환하는 함수
+            function createImgTag() {
+                
+                var tmp = ""
+
+                for (i = 0; i < cardArr.length; i++)
+                    tmp += "<img src='" + getImagePath(cardArr[i]) + "'>";
+
+                return tmp;
+
+            }
+
+
+                 // cardArr의 요소(0~52)를 넣으면, <img>의 src형식에 맞게 생성해서 반환
+             function getImagePath(card) {
+
+                return FILE_PATH + '/' + card + EXTENSION;
+
+                        }
+
+
+            // <img>에 이벤트 등록(클릭 이벤트) _ ? 이거 자체를 onload에 안 넣고, 메서드에 따로 넣은 이유는 단지 객체화를 하기 위함인지..그런거같음
             function addEventToImgTag() {
                 var imgTagArr = document.getElementsByTagName("img"); //img태그 배열
 
@@ -71,7 +103,7 @@
 
 
             function flip(imgTag) {  // 카드를 뒤집는 함수. imgTag.src가 뒷면이면 앞면, 앞면이면 뒷면으로
-
+                //0 ~ 52    
                 var card = cardArr[indexOf(imgTag)]; // => cardImg/back.png
                 imgTag.src = isBack(imgTag) ? getImagePath(card) : BACK_IMG_SRC; //T면(뒷면이면) 카드 앞면, F면(앞면이면) 카드 뒷면 _ 선택한 이미지의 경로 변경
 
@@ -83,11 +115,11 @@
             function indexOf(imgTag) {
 
                 var imgTagArr = document.getElementsByTagName("img");
+                
 
                 for (i = 0; i < imgTagArr.length; i++)
-
-                    if (imgTagArr[i] == imgTag) return i; //클릭한 이미지와 같다면 인덱스 반환
-
+                    if (imgTagArr[i] == imgTag) return i; //클릭한 이미지와 같다면 인덱스 반환(0~52)
+                
                 return -1; //같지 않다면 -1 반환
 
             }
@@ -99,9 +131,8 @@
 
                 var clickedCard = e.srcElement; // e.srcElement는 <img> 객체
                 // event : document에서 발생하는 이벤트 자체를 가리킨다. -> 이벤트
-                // srcElement : 이벤트가 발생된 document 내의 객체이다. -> 이벤트 객체
-                console.log(e.srcElement)
-
+                // srcElement : 이벤트가 발생된(클릭한 하나의 카드) document 내의 객체이다. -> 이벤트 객체
+                
                 // 앞면인 카드를 클릭하면 alert();
                 if (!isBack(clickedCard)) { //앞면이라면
 
@@ -117,22 +148,22 @@
 
 
                 // 두번째 카드인 경우
-                if (firstCard) { //값이 있다면, (null -> false인 값)
+                if (firstCard) { //값이 있다면, (null이 아니라면)
+
                     // 첫번째 카드와 두번째 카드를 비교한다.
-
                     (function (card) {
-                        
 
-                        setTimeout(compareAndFlip, 1000,card); //펼치고, 1초 후에 뒤집음
+                        setTimeout(compareAndFlip, 1000,card);
                         //setTimeout() : 특정 시간이 지난 다음에 코드를 실행하는 함수
-                        //card -> compareAndFlip()에 들어감
+                        //card = clickedCard
 
                     })(clickedCard);
+                    // 익명 함수를 선언하고 즉시 호출합니다. 클로저를 사용하여 클릭된 카드 정보를 보존하고, 비교 후 뒤집기 함수에 전달합니다.
+                    // 클로저를 형성함으로써 clickedCard의 값이 나중에 setTimeout 함수가 실행될 때까지 보존됩니다.
 
                 } else { // 첫번째 카드인 경우(null)
 
                     // 클릭한 카드를 첫번째 카드로 저장한다.
-
                     firstCard = clickedCard;
 
                 }
@@ -218,55 +249,21 @@
             }
 
 
-            // cardArr초기화
-            function initCardArr() {
-
-                for (i = 0; i < 52; i++) {
-                    cardArr.push(i); //배열에 순서대로 들어감
-                }
-
-            }
-
-
-
-            // 52개의 <img>를 생성해서 문자열로 반환하는 함수
-            function createImgTag() {
-                
-                var tmp = ""
-
-                for (i = 0; i < cardArr.length; i++)
-                    tmp += "<img src='" + getImagePath(cardArr[i]) + "'>";
-
-                return tmp;
-
-            }
-
-
-
-            // cardArr의 요소를 넣으면, <img>의 src형식에 맞게 생성해서 반환
-            function getImagePath(card) {
-
-                return FILE_PATH + '/' + card + EXTENSION;
-
-            }
-
-
-
-            // showBtn클릭시, 모든 카드를 뒷면으로 변경
+            // showBtn클릭시, 모든 카드를 앞면으로 변경
 
             function show() {
 
-                setImgSrc('BACK');
+                setImgSrc('FRONT');
 
             }
 
 
 
-            // hideBtn클릭시, 모든 카드를 앞면으로 변경
+            // hideBtn클릭시, 모든 카드를 뒷면으로 변경
 
             function hide() {
 
-                setImgSrc('FRONT');
+                setImgSrc('BACK');
 
             }
 
@@ -291,7 +288,7 @@
                 // 배열 cardArr를 섞는다.
                 cardArr.sort((a, b) => Math.random() - 0.5); //배열을 섞고,
 
-                show(); // 카드 화면에 띄우기
+                hide(); // 숨긴 채로 섞기
             }
 
         </script>
